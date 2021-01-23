@@ -31,6 +31,6 @@ export class Network implements INetwork {
   }
 
   direct(): Connection[] {
-    return this._connections.filter(conn => conn instanceof Connection) as Connection[];
+    return this._connections.filter((conn): conn is Connection => conn instanceof Connection);
   }
 }

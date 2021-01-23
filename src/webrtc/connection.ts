@@ -82,6 +82,14 @@ export class WebRTCConnection {
       type: 'answer',
       sdp: answer.sdp,
     });
+
+    await new Promise<void>(resolve => {
+      this._connection.addEventListener('connectionstatechange', () => {
+        if (this._connection.connectionState === 'connected') {
+          resolve();
+        }
+      });
+    });
   }
 
   send(message: string): void {

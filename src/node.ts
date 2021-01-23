@@ -27,7 +27,7 @@ export class Node implements INode {
     );
 
     await connection.establish(this._discoverer);
-    this.network.connections.push(connection);
+    this.network.add(connection);
 
     return connection;
   }

@@ -1,5 +1,9 @@
+import { INode } from '../node';
+
 export interface IPacket {
-  type: string;
+  readonly type: string;
+  readonly from: INode;
+  readonly to?: INode;
   ttl: number;
 }
 

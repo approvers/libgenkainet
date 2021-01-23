@@ -81,16 +81,16 @@ export class WebRTCConnection {
   }
 
   async establish(answer: IAnswer): Promise<void> {
-    await this._connection.setRemoteDescription({
-      type: 'answer',
-      sdp: answer.sdp,
-    });
-
     await new Promise<void>(resolve => {
       this._connection.addEventListener('connectionstatechange', () => {
         if (this._connection.connectionState === 'connected') {
           resolve();
         }
+      });
+
+      this._connection.setRemoteDescription({
+        type: 'answer',
+        sdp: answer.sdp,
       });
     });
   }

@@ -1,7 +1,7 @@
 import { IDiscoverer } from './discoverer';
 import { INode } from './node';
 import { IPacket } from './packet';
-import { WebRTCConnection } from './webrtc';
+import { IAnswer, IOffer, WebRTCConnection } from './webrtc';
 import { IHandler } from './handler';
 
 export type ConnectionState = 'pending' | 'connecting' | 'established' | 'abandoned';
@@ -48,6 +48,12 @@ export class Connection implements IConnection {
 
     this._state = 'established';
     this._establishedAt = new Date();
+  }
+
+  async answer(offer: IOffer): Promise<IAnswer> {
+    this._state = 'connecting';
+
+    return await this._rtc.acceptOffer(offer);
   }
 
   send(packet: IPacket): void {

@@ -26,7 +26,7 @@ export class MessagePacket implements IMessagePacket {
 }
 
 export interface IMessageHandler {
-  handle(message: string): void;
+  handle(from: INode, message: string): void;
 }
 
 export class MessagePacketHandler implements IPacketHandler<IMessagePacket> {
@@ -38,7 +38,7 @@ export class MessagePacketHandler implements IPacketHandler<IMessagePacket> {
 
   handle(packet: IMessagePacket): void {
     if (packet.to === undefined || packet.to.id === this._node.id) {
-      return this._handler.handle(packet.message);
+      return this._handler.handle(packet.from, packet.message);
     }
 
     this._node.send(packet);

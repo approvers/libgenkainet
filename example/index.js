@@ -11,8 +11,8 @@ const bob = new Node(
   'bob',
   {},
   new DefaultHandlerFactory({
-    handle(message) {
-      console.log(`bob received: ${message}`);
+    handle(from, message) {
+      console.log(`bob received from ${from.id}: ${message}`);
     },
   }),
   connectionFactory,
@@ -28,8 +28,8 @@ const alice = new Node(
     }
   },
   new DefaultHandlerFactory({
-    handle(message) {
-      console.log(`alice received: ${message}`);
+    handle(from, message) {
+      console.log(`alice received from ${from.id}: ${message}`);
     }
   }),
   connectionFactory,

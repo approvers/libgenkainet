@@ -13,10 +13,15 @@ export class MessagePacket implements IMessagePacket {
   public ttl: number = DEFAULT_TTL;
 
   constructor(
-    public readonly from: INode,
-    public readonly to: INode,
     public readonly message: string,
+    public readonly from: INode,
+    public readonly to?: INode,
   ) {
+    this.from = { id: this.from.id };
+
+    if (this.to !== undefined) {
+      this.to = { id: this.to.id };
+    }
   }
 }
 

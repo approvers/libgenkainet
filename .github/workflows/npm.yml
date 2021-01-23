@@ -1,0 +1,34 @@
+name: npm
+
+on:
+  push: ~
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 15
+          registry-url: 'https://npm.pkg.github.com/'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build TypeScript files
+        run: npm run build
+
+      - name: Set version by the release tag
+        if: ${{ github.event_name == 'release' }}
+        run: npm version --no-git-tag-version ${{ github.event.release.tag_name }}
+
+      - name: Publish the package
+        if: ${{ github.event_name == 'release' }}
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

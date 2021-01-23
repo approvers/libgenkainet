@@ -1,13 +1,13 @@
-import { Connection } from './connection';
+import { IConnection } from './connection';
 
 export interface INetwork {
-  readonly connections: Connection[];
+  readonly connections: IConnection[];
 }
 
 export class Network implements INetwork {
-  private _connections: Connection[] = [];
+  private _connections: IConnection[] = [];
 
-  public get connections(): Connection[] {
+  public get connections(): IConnection[] {
     return this._connections;
   }
 }

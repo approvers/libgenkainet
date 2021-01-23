@@ -48,12 +48,10 @@ export class WebRTCConnection {
   }
 
   async acceptOffer(offer: IOffer): Promise<IAnswer> {
-    await this._connection.setRemoteDescription(
-      new RTCSessionDescription({
-        type: 'offer',
-        sdp: offer.sdp,
-      }),
-    );
+    await this._connection.setRemoteDescription({
+      type: 'offer',
+      sdp: offer.sdp,
+    });
 
     const description = await this._connection.createAnswer();
     await this._connection.setLocalDescription(description);
@@ -65,12 +63,10 @@ export class WebRTCConnection {
   }
 
   async establish(answer: IAnswer): Promise<void> {
-    await this._connection.setRemoteDescription(
-      new RTCSessionDescription({
-        type: 'answer',
-        sdp: answer.sdp,
-      })
-    );
+    await this._connection.setRemoteDescription({
+      type: 'answer',
+      sdp: answer.sdp,
+    });
   }
 
   send(message: string): void {

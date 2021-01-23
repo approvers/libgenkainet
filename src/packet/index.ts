@@ -1,5 +1,7 @@
 import { INode } from '../node';
 
+export const DEFAULT_TTL = 50;
+
 export interface IPacket {
   readonly type: string;
   readonly from: INode;

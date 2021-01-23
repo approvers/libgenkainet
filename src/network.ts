@@ -33,4 +33,8 @@ export class Network implements INetwork {
   direct(): Connection[] {
     return this._connections.filter((conn): conn is Connection => conn instanceof Connection);
   }
+
+  isDirect(to: INode): boolean {
+    return this._connections.some(conn => conn instanceof Connection && (conn.from.id === to.id || conn.to.id === to.id));
+  }
 }

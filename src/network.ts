@@ -16,8 +16,11 @@ export class Network implements INetwork {
     this._connections.push(...connections);
   }
 
-  route(to: INode): Connection | undefined {
-    const connection = this._connections.find(conn => conn.to.id === to.id);
+  route(to: INode, excepts: INode[] = []): Connection | undefined {
+    const connection = this._connections
+      .filter(conn => !excepts.some(e => e.id === conn.from.id || e.id === conn.to.id))
+      .find(conn => conn.from.id === to.id || conn.to.id === to.id)
+    ;
 
     if (connection === undefined) {
       return undefined;
@@ -27,7 +30,10 @@ export class Network implements INetwork {
       return connection;
     }
 
-    return this.route(connection.from);
+    return this.route(
+      connection.from.id === to.id ? connection.from : connection.to,
+      [...excepts, connection.from.id === to.id ? connection.to : connection.from],
+    );
   }
 
   direct(): Connection[] {

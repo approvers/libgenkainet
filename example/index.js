@@ -44,9 +44,17 @@ const alice = new Node(
 
   connection.send(
     new MessagePacket(
+      'hello!',
       alice,
       bob,
-      'hello!',
+    ),
+  );
+
+  connection.send(
+    new MessagePacket(
+      'hi!',
+      bob,
+      alice,
     ),
   );
 })();

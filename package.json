@@ -1,0 +1,8 @@
+{
+  "name": "libgenkainet",
+  "version": "0.1.0",
+  "description": "A cross-platform core library for genkainet.",
+  "repository": "git@github.com:approvers/libgenkainet.git",
+  "author": "Naoki Ikeguchi <root@siketyan.dev>",
+  "license": "MIT"
+}

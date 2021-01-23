@@ -12,6 +12,10 @@ export class Handler {
   }
 
   async handle(packet: IPacket): Promise<void> {
+    if (--packet.ttl <= 0) {
+      return;
+    }
+
     const promise = this._packetHandlers
       .find(handler => handler.supports(packet))
       ?.handle(packet)

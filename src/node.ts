@@ -15,15 +15,14 @@ export class Node implements INode {
 
   constructor(
     public readonly id: string,
-    private readonly _discoverer: IDiscoverer,
     private readonly _handlerFactory: IHandlerFactory,
     private readonly _connectionFactory: IRTCPeerConnectionFactory = new RTCPeerConnectionFactory(),
-  ) {
-    this.network = new Network();
-    this._handler = this._handlerFactory.create(this);
-  }
+    ) {
+      this.network = new Network();
+      this._handler = this._handlerFactory.create(this);
+    }
 
-  async connect(to: INode): Promise<Connection> {
+  async connect(to: INode, discoverer: IDiscoverer): Promise<Connection> {
     const connection = new Connection(
       this,
       to,
@@ -31,7 +30,7 @@ export class Node implements INode {
       this._connectionFactory,
     );
 
-    await connection.establish(this._discoverer);
+    await connection.establish(discoverer);
     this.network.add(connection);
 
     return connection;

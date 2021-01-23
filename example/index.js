@@ -9,7 +9,6 @@ const connectionFactory = {
 
 const bob = new Node(
   'bob',
-  {},
   new DefaultHandlerFactory({
     handle(from, message) {
       console.log(`bob received from ${from.id}: ${message}`);
@@ -20,13 +19,6 @@ const bob = new Node(
 
 const alice = new Node(
   'alice',
-  {
-    async discover(offer) {
-      console.log('alice is trying to connect to bob');
-
-      return (await bob.accept(offer))[1];
-    }
-  },
   new DefaultHandlerFactory({
     handle(from, message) {
       console.log(`alice received from ${from.id}: ${message}`);
@@ -38,6 +30,12 @@ const alice = new Node(
 (async () => {
   const connection = await alice.connect({
     id: 'bob',
+  }, {
+    async discover(offer) {
+      console.log('alice is trying to connect to bob');
+
+      return (await bob.accept(offer))[1];
+    }
   });
 
   console.log('connection established');

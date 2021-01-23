@@ -1,7 +1,7 @@
 import { IDiscoverer } from './discoverer';
 import { INode } from './node';
 import { IPacket } from './packet';
-import { IAnswer, IOffer, WebRTCConnection } from './webrtc';
+import { IAnswer, IOffer, IRTCPeerConnectionFactory, RTCPeerConnectionFactory, WebRTCConnection } from './webrtc';
 import { IHandler } from './handler';
 
 export type ConnectionState = 'pending' | 'connecting' | 'established' | 'abandoned';
@@ -30,12 +30,12 @@ export class Connection implements IConnection {
     public readonly from: INode,
     public readonly to: INode,
     private readonly _handler: IHandler,
-    stunServers: string[],
+    connectionFactory: IRTCPeerConnectionFactory = new RTCPeerConnectionFactory(),
   ) {
     this._rtc = new WebRTCConnection(
       from,
       message => this.handle(message),
-      stunServers,
+      connectionFactory,
     );
   }
 

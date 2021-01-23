@@ -2,6 +2,25 @@ import { Answer, IAnswer } from './answer';
 import { IOffer, Offer } from './offer';
 import { INode } from '../node';
 
+export interface IRTCPeerConnectionFactory {
+  create(): RTCPeerConnection;
+}
+
+export class RTCPeerConnectionFactory implements IRTCPeerConnectionFactory {
+  constructor(
+    private readonly _stunServers: string[] = [],
+  ) {
+  }
+
+  create(): RTCPeerConnection {
+    return new RTCPeerConnection({
+      iceServers: this._stunServers.map(server => ({
+        urls: server,
+      }))
+    });
+  }
+}
+
 export class WebRTCConnection {
   private _connection: RTCPeerConnection;
   private _channel?: RTCDataChannel;
@@ -9,13 +28,9 @@ export class WebRTCConnection {
   constructor(
     private readonly _from: INode,
     private readonly _handler: (message: string) => void,
-    stunServers: string[],
+    connectionFactory: IRTCPeerConnectionFactory,
   ) {
-    const connection = new RTCPeerConnection({
-      iceServers: stunServers.map(server => ({
-        urls: server,
-      })),
-    });
+    const connection = connectionFactory.create();
 
     connection.addEventListener('datachannel', event => {
       this._channel = event.channel;

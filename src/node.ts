@@ -1,8 +1,8 @@
 import { Connection } from './connection';
 import { IDiscoverer } from './discoverer';
-import { IHandler } from './handler';
+import { IHandler, IHandlerFactory } from './handler';
 import { Network } from './network';
-import { IAnswer, IOffer } from './webrtc';
+import { IAnswer, IOffer, IRTCPeerConnectionFactory, RTCPeerConnectionFactory } from './webrtc';
 import { IPacket } from './packet';
 
 export interface INode {
@@ -11,14 +11,16 @@ export interface INode {
 
 export class Node implements INode {
   public readonly network: Network;
+  private readonly _handler: IHandler;
 
   constructor(
     public readonly id: string,
     private readonly _discoverer: IDiscoverer,
-    private readonly _handler: IHandler,
-    private readonly _stunServers: string[]
+    private readonly _handlerFactory: IHandlerFactory,
+    private readonly _connectionFactory: IRTCPeerConnectionFactory = new RTCPeerConnectionFactory(),
   ) {
     this.network = new Network();
+    this._handler = this._handlerFactory.create(this);
   }
 
   async connect(to: INode): Promise<Connection> {
@@ -26,7 +28,7 @@ export class Node implements INode {
       this,
       to,
       this._handler,
-      this._stunServers,
+      this._connectionFactory,
     );
 
     await connection.establish(this._discoverer);
@@ -40,7 +42,7 @@ export class Node implements INode {
       offer.from,
       this,
       this._handler,
-      this._stunServers,
+      this._connectionFactory,
     );
 
     const answer = await connection.answer(offer);

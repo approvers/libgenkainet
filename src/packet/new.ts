@@ -41,6 +41,10 @@ export class NewPacketHandler implements IPacketHandler<INewPacket> {
   }
 
   handle(packet: INewPacket): void {
+    if (this._node.network.isKnown(packet.connection)) {
+      return;
+    }
+
     this._node.network.add(packet.connection);
     this._node.send(packet);
 

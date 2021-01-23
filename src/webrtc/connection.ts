@@ -27,6 +27,7 @@ export class WebRTCConnection {
 
   constructor(
     private readonly _from: INode,
+    private readonly _to: INode,
     private readonly _handler: (message: string) => void,
     connectionFactory: IRTCPeerConnectionFactory,
   ) {
@@ -48,6 +49,7 @@ export class WebRTCConnection {
       this._connection.addEventListener('icecandidate', () => resolve(
         Offer.fromDescription(
           this._from,
+          this._to,
           this._connection.localDescription as RTCSessionDescription,
         ),
       ));
@@ -72,22 +74,23 @@ export class WebRTCConnection {
     await this._connection.setLocalDescription(description);
 
     return Answer.fromDescription(
+      this._to,
       this._from,
       this._connection.localDescription as RTCSessionDescription,
     );
   }
 
   async establish(answer: IAnswer): Promise<void> {
-    await this._connection.setRemoteDescription({
-      type: 'answer',
-      sdp: answer.sdp,
-    });
-
     await new Promise<void>(resolve => {
       this._connection.addEventListener('connectionstatechange', () => {
         if (this._connection.connectionState === 'connected') {
           resolve();
         }
+      });
+
+      this._connection.setRemoteDescription({
+        type: 'answer',
+        sdp: answer.sdp,
       });
     });
   }

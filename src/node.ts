@@ -23,7 +23,8 @@ export class Node implements INode {
     this._handler = this._handlerFactory.create(this);
   }
 
-  async connect(to: INode): Promise<Connection> {
+  async connect(): Promise<Connection> {
+    const to = await this._discoverer.discover();
     const connection = new Connection(
       this,
       to,
@@ -67,10 +68,6 @@ export class Node implements INode {
 
   private broadcast(packet: IPacket): void {
     for (const connection of this.network.direct()) {
-      if (packet.from.id === connection.from.id) {
-        continue;
-      }
-
       connection.send(packet);
     }
   }

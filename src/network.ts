@@ -17,22 +17,26 @@ export class Network implements INetwork {
   }
 
   route(to: INode, excepts: INode[] = []): Connection | undefined {
-    const connection = this._connections
+    const connections = this._connections
       .filter(conn => !excepts.some(e => e.id === conn.from.id || e.id === conn.to.id))
-      .find(conn => conn.from.id === to.id || conn.to.id === to.id)
+      .filter(conn => conn.from.id === to.id || conn.to.id === to.id)
     ;
 
-    if (connection === undefined) {
+    if (connections.length <= 0) {
       return undefined;
     }
 
-    if (connection instanceof Connection) {
-      return connection;
+    const direct = connections.find((conn): conn is Connection => conn instanceof Connection);
+
+    if (direct !== undefined) {
+      return direct;
     }
 
+    const connection = connections[0];
+
     return this.route(
-      connection.from.id === to.id ? connection.from : connection.to,
-      [...excepts, connection.from.id === to.id ? connection.to : connection.from],
+      connection.from.id === to.id ? connection.to : connection.from,
+      [...excepts],
     );
   }
 
@@ -42,5 +46,9 @@ export class Network implements INetwork {
 
   isDirect(to: INode): boolean {
     return this._connections.some(conn => conn instanceof Connection && (conn.from.id === to.id || conn.to.id === to.id));
+  }
+
+  isKnown(connection: IConnection) {
+    return this._connections.some(conn => !(conn instanceof Connection) && conn.from.id === connection.from.id && conn.to.id === connection.to.id);
   }
 }

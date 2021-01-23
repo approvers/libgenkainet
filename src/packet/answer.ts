@@ -18,7 +18,7 @@ export class AnswerPacket implements IAnswerPacket {
     public readonly from: INode,
     public readonly to?: INode,
   ) {
-    this.answer = { from: { id: this.answer.from.id }, sdp: this.answer.sdp };
+    this.answer = { from: { id: this.answer.from.id }, to: { id: this.answer.to.id }, sdp: this.answer.sdp };
     this.from = { id: this.from.id };
 
     if (this.to !== undefined) {

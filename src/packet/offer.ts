@@ -19,7 +19,7 @@ export class OfferPacket implements IOfferPacket {
     public readonly from: INode,
     public readonly to?: INode,
   ) {
-    this.offer = { from: { id: this.offer.from.id }, sdp: this.offer.sdp };
+    this.offer = { from: { id: this.offer.from.id }, to: { id: this.offer.to.id }, sdp: this.offer.sdp };
     this.from = { id: this.from.id };
 
     if (this.to !== undefined) {

@@ -27,6 +27,7 @@ export class WebRTCConnection {
 
   constructor(
     private readonly _from: INode,
+    private readonly _to: INode,
     private readonly _handler: (message: string) => void,
     connectionFactory: IRTCPeerConnectionFactory,
   ) {
@@ -48,6 +49,7 @@ export class WebRTCConnection {
       this._connection.addEventListener('icecandidate', () => resolve(
         Offer.fromDescription(
           this._from,
+          this._to,
           this._connection.localDescription as RTCSessionDescription,
         ),
       ));
@@ -72,6 +74,7 @@ export class WebRTCConnection {
     await this._connection.setLocalDescription(description);
 
     return Answer.fromDescription(
+      this._to,
       this._from,
       this._connection.localDescription as RTCSessionDescription,
     );

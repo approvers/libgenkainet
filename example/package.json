@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "dependencies": {
+    "libgenkainet": "./..",
+    "wrtc": "^0.4.7"
+  }
+}

@@ -4,7 +4,7 @@ import { IPacket } from './packet';
 import { WebRTCConnection } from './webrtc';
 import { IHandler } from './handler';
 
-export type ConnectionState = null | 'connecting' | 'established' | 'abandoned';
+export type ConnectionState = 'pending' | 'connecting' | 'established' | 'abandoned';
 
 export interface IConnection {
   readonly from: INode,
@@ -15,7 +15,7 @@ export interface IConnection {
 
 export class Connection implements IConnection {
   private readonly _rtc: WebRTCConnection;
-  private _state: ConnectionState = null;
+  private _state: ConnectionState = 'pending';
   private _establishedAt: Date | null = null;
 
   public get state(): ConnectionState {

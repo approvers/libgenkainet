@@ -16,14 +16,10 @@ export class Handler {
       return;
     }
 
-    const promise = this._packetHandlers
+    await this._packetHandlers
       .find(handler => handler.supports(packet))
       ?.handle(packet)
     ;
-
-    if (promise !== undefined) {
-      await promise;
-    }
   }
 
   static default(node: Node): Handler {

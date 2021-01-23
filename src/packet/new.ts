@@ -15,7 +15,7 @@ export class NewPacketHandler implements IPacketHandler<INewPacket> {
   ) {
   }
 
-  handle(packet: INewPacket): void | Promise<void> {
+  handle(packet: INewPacket): void {
     this._node.network.add(packet.connection);
     this._node.send(packet);
   }

@@ -1,6 +1,7 @@
 import { IPacket, IPacketHandler } from '.';
 import { Node } from '../node';
 import { IConnection } from '../connection';
+import { RoutePacket } from './route';
 
 const type = 'new';
 
@@ -18,6 +19,16 @@ export class NewPacketHandler implements IPacketHandler<INewPacket> {
   handle(packet: INewPacket): void {
     this._node.network.add(packet.connection);
     this._node.send(packet);
+
+    if (this._node.network.isDirect(packet.from)) {
+      this._node.send(
+        new RoutePacket(
+          this._node,
+          packet.from,
+          this._node.network.connections,
+        ),
+      );
+    }
   }
 
   supports(packet: IPacket): boolean {

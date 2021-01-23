@@ -68,10 +68,6 @@ export class Node implements INode {
 
   private broadcast(packet: IPacket): void {
     for (const connection of this.network.direct()) {
-      if (packet.from.id === connection.from.id) {
-        continue;
-      }
-
       connection.send(packet);
     }
   }

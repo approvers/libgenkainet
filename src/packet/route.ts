@@ -18,6 +18,18 @@ export class RoutePacket implements IRoutePacket {
     public readonly to: INode,
     public readonly connections: IConnection[],
   ) {
+    this.from = { id: this.from.id };
+
+    if (this.to !== undefined) {
+      this.to = { id: this.to.id };
+    }
+
+    this.connections = this.connections.map(connection => ({
+      from: { id: connection.from.id },
+      to: { id: connection.to.id },
+      state: connection.state,
+      establishedAt: connection.establishedAt,
+    }))
   }
 }
 

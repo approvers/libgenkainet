@@ -1,4 +1,4 @@
-const { DefaultHandlerFactory, MessagePacket, Node } = require('libgenkainet');
+const { DefaultHandlerFactory, MessagePacket, NewPacket, Node } = require('libgenkainet');
 const { RTCPeerConnection } = require('wrtc');
 
 const connectionFactory = {
@@ -41,6 +41,14 @@ const alice = new Node(
   });
 
   console.log('connection established');
+
+  connection.send(
+    new NewPacket(
+      connection,
+      alice,
+      bob,
+    ),
+  );
 
   connection.send(
     new MessagePacket(

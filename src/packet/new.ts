@@ -1,5 +1,5 @@
-import { IPacket, IPacketHandler } from '.';
-import { Node } from '../node';
+import { DEFAULT_TTL, IPacket, IPacketHandler } from '.';
+import { INode, Node } from '../node';
 import { IConnection } from '../connection';
 import { RoutePacket } from './route';
 
@@ -8,6 +8,30 @@ const type = 'new';
 export interface INewPacket extends IPacket {
   type: typeof type;
   connection: IConnection;
+}
+
+export class NewPacket implements INewPacket {
+  public readonly type = type;
+  public ttl: number = DEFAULT_TTL;
+
+  constructor(
+    public readonly connection: IConnection,
+    public readonly from: INode,
+    public readonly to?: INode,
+  ) {
+    this.connection = {
+      from: { id: this.connection.from.id },
+      to: { id: this.connection.to.id },
+      state: this.connection.state,
+      establishedAt: this.connection.establishedAt,
+    };
+
+    this.from = { id: this.from.id };
+
+    if (this.to !== undefined) {
+      this.to = { id: this.to.id };
+    }
+  }
 }
 
 export class NewPacketHandler implements IPacketHandler<INewPacket> {

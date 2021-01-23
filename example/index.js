@@ -7,9 +7,24 @@ const connectionFactory = {
   },
 };
 
+const discoverer = new Node(
+  'discoverer',
+  {},
+  new DefaultHandlerFactory({
+    handle(from, message) {
+      console.log(`discoverer received from ${from.id}: ${message}`);
+    },
+  }),
+  connectionFactory,
+);
+
+const pool = [discoverer];
+const discover = async () => pool[pool.length - 1];
+const offer = async (offer) => (await pool[pool.length - 1].accept(offer))[1];
+
 const bob = new Node(
   'bob',
-  {},
+  { discover, offer },
   new DefaultHandlerFactory({
     handle(from, message) {
       console.log(`bob received from ${from.id}: ${message}`);
@@ -20,13 +35,7 @@ const bob = new Node(
 
 const alice = new Node(
   'alice',
-  {
-    async discover(offer) {
-      console.log('alice is trying to connect to bob');
-
-      return (await bob.accept(offer))[1];
-    }
-  },
+  { discover, offer },
   new DefaultHandlerFactory({
     handle(from, message) {
       console.log(`alice received from ${from.id}: ${message}`);
@@ -36,33 +45,39 @@ const alice = new Node(
 );
 
 (async () => {
-  const connection = await alice.connect({
-    id: 'bob',
-  });
+  const bobToDiscoverer = await bob.connect();
+  console.log(`connection established from ${bobToDiscoverer.from.id} to ${bobToDiscoverer.to.id}`);
 
-  console.log('connection established');
+  const aliceToDiscoverer = await alice.connect();
+  console.log(`connection established from ${aliceToDiscoverer.from.id} to ${aliceToDiscoverer.to.id}`);
 
-  connection.send(
+  bob.send(
     new NewPacket(
-      connection,
-      alice,
+      bobToDiscoverer,
       bob,
     ),
   );
 
-  connection.send(
+  alice.send(
+    new NewPacket(
+      aliceToDiscoverer,
+      alice,
+    ),
+  );
+
+  bobToDiscoverer.send(
     new MessagePacket(
       'hello!',
-      alice,
       bob,
+      alice,
     ),
   );
 
-  connection.send(
+  aliceToDiscoverer.send(
     new MessagePacket(
       'hi!',
-      bob,
       alice,
+      bob,
     ),
   );
 })();

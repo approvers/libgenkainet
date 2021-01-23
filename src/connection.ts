@@ -43,7 +43,7 @@ export class Connection implements IConnection {
     this._state = 'connecting';
 
     const offer = await this._rtc.createOffer();
-    const answer = await discoverer.discover(offer);
+    const answer = await discoverer.offer(offer);
     await this._rtc.establish(answer);
 
     this._state = 'established';

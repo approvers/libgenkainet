@@ -1,7 +1,10 @@
 {
   "name": "@approvers/libgenkainet",
   "description": "A cross-platform core library for genkainet.",
-  "repository": "git@github.com:approvers/libgenkainet.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/approvers/libgenkainet.git"
+  },
   "author": "Naoki Ikeguchi <root@siketyan.dev>",
   "license": "MIT",
   "main": "./dist/index.js",

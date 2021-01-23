@@ -17,10 +17,10 @@ export class Node implements INode {
     public readonly id: string,
     private readonly _handlerFactory: IHandlerFactory,
     private readonly _connectionFactory: IRTCPeerConnectionFactory = new RTCPeerConnectionFactory(),
-    ) {
-      this.network = new Network();
-      this._handler = this._handlerFactory.create(this);
-    }
+  ) {
+    this.network = new Network();
+    this._handler = this._handlerFactory.create(this);
+  }
 
   async connect(to: INode, discoverer: IDiscoverer): Promise<Connection> {
     const connection = new Connection(

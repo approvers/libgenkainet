@@ -15,12 +15,12 @@ export class NewPacketHandler implements IPacketHandler<INewPacket> {
   ) {
   }
 
-  public handle(packet: INewPacket): void | Promise<void> {
+  handle(packet: INewPacket): void | Promise<void> {
     this._node.network.add(packet.connection);
     this._node.send(packet);
   }
 
-  public supports(packet: IPacket): boolean {
+  supports(packet: IPacket): boolean {
     return packet.type === type;
   }
 }

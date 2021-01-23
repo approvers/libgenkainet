@@ -3,6 +3,7 @@ import { IDiscoverer } from './discoverer';
 import { IHandler } from './handler';
 import { Network } from './network';
 import { IAnswer, IOffer } from './webrtc';
+import { IPacket } from './packet';
 
 export interface INode {
   readonly id: string;
@@ -46,5 +47,29 @@ export class Node implements INode {
     this.network.add(connection);
 
     return [connection, answer];
+  }
+
+  send(packet: IPacket): void {
+    if (packet.to === undefined) {
+      return this.broadcast(packet);
+    }
+
+    const connection = this.network.route(packet.to);
+
+    if (connection === undefined) {
+      throw Error('No route found');
+    }
+
+    connection.send(packet);
+  }
+
+  private broadcast(packet: IPacket): void {
+    for (const connection of this.network.direct()) {
+      if (packet.from.id === connection.from.id) {
+        continue;
+      }
+
+      connection.send(packet);
+    }
   }
 }

@@ -1,11 +1,18 @@
-import { IPacket, IPacketHandler } from './packet';
 import { Node } from './node';
+import {
+  IMessageHandler,
+  IPacket,
+  IPacketHandler,
+  MessagePacketHandler,
+  NewPacketHandler,
+  RoutePacketHandler,
+} from './packet';
 
 export interface IHandler {
   handle(packet: IPacket): Promise<void>;
 }
 
-export class Handler {
+export class Handler implements IHandler {
   constructor(
     private readonly _packetHandlers: IPacketHandler<IPacket>[] = [],
   ) {
@@ -21,9 +28,23 @@ export class Handler {
       ?.handle(packet)
     ;
   }
+}
 
-  static default(node: Node): Handler {
+export interface IHandlerFactory {
+  create(node: Node): IHandler
+}
+
+export class DefaultHandlerFactory implements IHandlerFactory {
+  constructor(
+    private readonly _messageHandler: IMessageHandler,
+  ) {
+  }
+
+  create(node: Node): IHandler {
     return new Handler([
+      new NewPacketHandler(node),
+      new RoutePacketHandler(node),
+      new MessagePacketHandler(node, this._messageHandler),
     ]);
   }
 }

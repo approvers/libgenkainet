@@ -90,13 +90,7 @@ const alice = new Node(
 );
 
 (async () => {
-  const bobToDiscoverer = await bob.connect({
-    async discover(offer) {
-      console.log('alice is trying to connect to bob');
-
-      return (await bob.accept(offer))[1];
-    }
-  });
+  const bobToDiscoverer = await bob.connect({ discover, offer });
   console.log(`connection established from ${bobToDiscoverer.from.id} to ${bobToDiscoverer.to.id}`);
 
   bob.send(

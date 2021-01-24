@@ -100,7 +100,15 @@ export class WebRTCConnection {
   }
 
   send(message: string): void {
+    if (this._channel?.readyState !== 'open') {
+      return;
+    }
+
     this._channel?.send(message);
+  }
+
+  isAvailable(): boolean {
+    return this._connection.connectionState === 'connected' && this._channel?.readyState === 'open';
   }
 
   private subscribe(): void {

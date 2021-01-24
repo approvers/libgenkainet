@@ -33,7 +33,7 @@ export class Network implements INetwork {
       return undefined;
     }
 
-    const direct = connections.find((conn): conn is Connection => conn instanceof Connection);
+    const direct = connections.find((conn): conn is Connection => conn instanceof Connection && conn.isAvailable());
 
     if (direct !== undefined) {
       return direct;
@@ -48,7 +48,7 @@ export class Network implements INetwork {
   }
 
   direct(): Connection[] {
-    return this._connections.filter((conn): conn is Connection => conn instanceof Connection);
+    return this._connections.filter((conn): conn is Connection => conn instanceof Connection && conn.isAvailable());
   }
 
   isDirect(to: INode): boolean {

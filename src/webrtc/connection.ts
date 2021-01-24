@@ -100,6 +100,10 @@ export class WebRTCConnection {
   }
 
   send(message: string): void {
+    if (this._channel?.readyState !== 'open') {
+      return;
+    }
+
     this._channel?.send(message);
   }
 

@@ -6,6 +6,7 @@ export interface INetwork {
 }
 
 export class Network implements INetwork {
+  public onUpdated?: () => void;
   private _connections: IConnection[] = [];
 
   public get connections(): IConnection[] {
@@ -14,10 +15,12 @@ export class Network implements INetwork {
 
   add(...connections: IConnection[]): void {
     this._connections.push(...connections);
+    this.onUpdated?.call(this);
   }
 
   remove(connection: IConnection): void {
     this._connections = this._connections.filter(conn => conn.from.id !== connection.from.id || conn.to.id !== connection.to.id);
+    this.onUpdated?.call(this);
   }
 
   route(to: INode, excepts: INode[] = []): Connection | undefined {

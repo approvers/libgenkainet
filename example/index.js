@@ -27,6 +27,15 @@ const discoverer = new Node(
   connectionFactory,
 );
 
+discoverer.network.onUpdated = () => {
+  console.log(
+    'network updated:',
+    discoverer.network.connections
+      .map(conn => `${conn.from.id} -> ${conn.to.id}`)
+      .join(', ')
+  );
+};
+
 const pool = () => [
   discoverer,
   ...discoverer.network.connections

@@ -40,8 +40,8 @@ const discover = async () => {
   return nodes[nodes.length - 1];
 };
 
-const offer = async (offer, to) => {
-  if (to.id === discoverer.id) {
+const offer = async (offer) => {
+  if (offer.to.id === discoverer.id) {
     return (await discoverer.accept(offer))[1];
   }
 
@@ -49,12 +49,12 @@ const offer = async (offer, to) => {
     new OfferPacket(
       offer,
       discoverer,
-      to,
+      offer.to,
     ),
   );
 
   return await new Promise(resolve => {
-    onAnswer.once(to.id, answer => {
+    onAnswer.once(offer.to.id, answer => {
       resolve(answer);
     });
   });

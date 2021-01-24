@@ -80,11 +80,15 @@ export class WebRTCConnection {
     );
   }
 
-  async establish(answer: IAnswer): Promise<void> {
+  async establish(answer: IAnswer, onDisconnected: () => void): Promise<void> {
     await new Promise<void>(resolve => {
       this._connection.addEventListener('connectionstatechange', () => {
         if (this._connection.connectionState === 'connected') {
           resolve();
+        }
+
+        if (this._connection.connectionState === 'disconnected') {
+          onDisconnected();
         }
       });
 

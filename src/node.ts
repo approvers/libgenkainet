@@ -32,6 +32,10 @@ export class Node implements INode {
       this._connectionFactory,
     );
 
+    connection.onDisconnected = () => {
+      this.network.remove(connection);
+    };
+
     await connection.establish(this._discoverer);
     this.network.add(connection);
 
@@ -45,6 +49,10 @@ export class Node implements INode {
       this._handler,
       this._connectionFactory,
     );
+
+    connection.onDisconnected = () => {
+      this.network.remove(connection);
+    };
 
     const answer = await connection.answer(offer);
     this.network.add(connection);

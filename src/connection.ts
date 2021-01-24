@@ -14,6 +14,7 @@ export interface IConnection {
 }
 
 export class Connection implements IConnection {
+  public onDisconnected?: () => void;
   private readonly _rtc: WebRTCConnection;
   private _state: ConnectionState = 'pending';
   private _establishedAt: Date | null = null;
@@ -45,7 +46,10 @@ export class Connection implements IConnection {
 
     const offer = await this._rtc.createOffer();
     const answer = await discoverer.offer(offer);
-    await this._rtc.establish(answer);
+    await this._rtc.establish(answer, () => {
+      this._state = 'abandoned';
+      this.onDisconnected?.call(this);
+    });
 
     this._state = 'established';
     this._establishedAt = new Date();

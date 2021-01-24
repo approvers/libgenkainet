@@ -67,6 +67,10 @@ export class Connection implements IConnection {
     );
   }
 
+  isAvailable(): boolean {
+    return this._rtc.isAvailable();
+  }
+
   private handle(message: string): void {
     this._handler.handle(
       JSON.parse(message) as IPacket,

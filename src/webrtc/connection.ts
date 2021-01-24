@@ -103,6 +103,10 @@ export class WebRTCConnection {
     this._channel?.send(message);
   }
 
+  isAvailable(): boolean {
+    return this._connection.connectionState === 'connected' && this._channel?.readyState === 'open';
+  }
+
   private subscribe(): void {
     this._channel?.addEventListener('message', event => {
       this._handler(event.data);

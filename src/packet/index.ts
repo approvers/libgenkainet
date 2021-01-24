@@ -1,7 +1,9 @@
 import { INode } from '../node';
 
+export * from './answer';
 export * from './message';
 export * from './new';
+export * from './offer';
 export * from './route';
 
 export const DEFAULT_TTL = 50;

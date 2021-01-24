@@ -1,10 +1,72 @@
-const { DefaultHandlerFactory, MessagePacket, NewPacket, Node } = require('libgenkainet');
+const { DefaultHandlerFactory, MessagePacket, NewPacket, Node, OfferPacket } = require('libgenkainet');
 const { RTCPeerConnection } = require('wrtc');
+const EventEmitter = require('events');
 
 const connectionFactory = {
   create() {
     return new RTCPeerConnection();
   },
+};
+
+const onAnswer = new EventEmitter();
+const discoverer = new Node(
+  'discoverer',
+  {},
+  new DefaultHandlerFactory(
+    {
+      handle(from, message) {
+        console.log(`discoverer received from ${from.id}: ${message}`);
+      },
+    },
+    {
+      handle(answer) {
+        onAnswer.emit(answer.from.id, answer);
+      },
+    },
+  ),
+  connectionFactory,
+);
+
+discoverer.network.onUpdated = () => {
+  console.log(
+    'network updated:',
+    discoverer.network.connections
+      .map(conn => `${conn.from.id} -> ${conn.to.id}`)
+      .join(', ')
+  );
+};
+
+const pool = () => [
+  discoverer,
+  ...discoverer.network.connections
+    .map(conn => [conn.from, conn.to])
+    .flat()
+    .filter(node => node.id !== discoverer.id),
+];
+
+const discover = async () => {
+  const nodes = pool();
+  return nodes[nodes.length - 1];
+};
+
+const offer = async (offer) => {
+  if (offer.to.id === discoverer.id) {
+    return (await discoverer.accept(offer))[1];
+  }
+
+  discoverer.send(
+    new OfferPacket(
+      offer,
+      discoverer,
+      offer.to,
+    ),
+  );
+
+  return await new Promise(resolve => {
+    onAnswer.once(offer.to.id, answer => {
+      resolve(answer);
+    });
+  });
 };
 
 const bob = new Node(
@@ -28,39 +90,48 @@ const alice = new Node(
 );
 
 (async () => {
-  const connection = await alice.connect({
-    id: 'bob',
-  }, {
+  const bobToDiscoverer = await bob.connect({
     async discover(offer) {
       console.log('alice is trying to connect to bob');
 
       return (await bob.accept(offer))[1];
     }
   });
+  console.log(`connection established from ${bobToDiscoverer.from.id} to ${bobToDiscoverer.to.id}`);
 
-  console.log('connection established');
-
-  connection.send(
+  bob.send(
     new NewPacket(
-      connection,
-      alice,
+      bobToDiscoverer,
       bob,
     ),
   );
 
-  connection.send(
+  const aliceToBob = await alice.connect();
+  console.log(`connection established from ${aliceToBob.from.id} to ${aliceToBob.to.id}`);
+
+  alice.send(
+    new NewPacket(
+      aliceToBob,
+      alice,
+    ),
+  );
+
+  // Wait for the stream becomes available
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  bob.send(
     new MessagePacket(
       'hello!',
-      alice,
       bob,
+      alice,
     ),
   );
 
-  connection.send(
+  alice.send(
     new MessagePacket(
-      'hi!',
-      bob,
+      'hello',
       alice,
+      discoverer,
     ),
   );
 })();

@@ -22,13 +22,18 @@ export class Node implements INode {
     this._handler = this._handlerFactory.create(this);
   }
 
-  async connect(to: INode, discoverer: IDiscoverer): Promise<Connection> {
+  async connect(discoverer: IDiscoverer): Promise<Connection> {
+    const to = await discoverer.discover();
     const connection = new Connection(
       this,
       to,
       this._handler,
       this._connectionFactory,
     );
+
+    connection.onDisconnected = () => {
+      this.network.remove(connection);
+    };
 
     await connection.establish(discoverer);
     this.network.add(connection);
@@ -43,6 +48,10 @@ export class Node implements INode {
       this._handler,
       this._connectionFactory,
     );
+
+    connection.onDisconnected = () => {
+      this.network.remove(connection);
+    };
 
     const answer = await connection.answer(offer);
     this.network.add(connection);
@@ -66,10 +75,6 @@ export class Node implements INode {
 
   private broadcast(packet: IPacket): void {
     for (const connection of this.network.direct()) {
-      if (packet.from.id === connection.from.id) {
-        continue;
-      }
-
       connection.send(packet);
     }
   }

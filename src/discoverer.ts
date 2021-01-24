@@ -1,5 +1,7 @@
 import { IAnswer, IOffer } from './webrtc';
+import { INode } from './node';
 
 export interface IDiscoverer {
-  discover(offer: IOffer): Promise<IAnswer>;
+  discover(): Promise<INode>
+  offer(offer: IOffer): Promise<IAnswer>;
 }

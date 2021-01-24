@@ -1,10 +1,13 @@
 import { Node } from './node';
 import {
+  AnswerPacketHandler,
+  IAnswerHandler,
   IMessageHandler,
   IPacket,
   IPacketHandler,
   MessagePacketHandler,
   NewPacketHandler,
+  OfferPacketHandler,
   RoutePacketHandler,
 } from './packet';
 
@@ -37,6 +40,7 @@ export interface IHandlerFactory {
 export class DefaultHandlerFactory implements IHandlerFactory {
   constructor(
     private readonly _messageHandler: IMessageHandler,
+    private readonly _answerHandler: IAnswerHandler,
   ) {
   }
 
@@ -45,6 +49,8 @@ export class DefaultHandlerFactory implements IHandlerFactory {
       new NewPacketHandler(node),
       new RoutePacketHandler(node),
       new MessagePacketHandler(node, this._messageHandler),
+      new OfferPacketHandler(node),
+      new AnswerPacketHandler(node, this._answerHandler),
     ]);
   }
 }

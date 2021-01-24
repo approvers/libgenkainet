@@ -16,6 +16,10 @@ export class Network implements INetwork {
     this._connections.push(...connections);
   }
 
+  remove(connection: IConnection): void {
+    this._connections = this._connections.filter(conn => conn.from.id !== connection.from.id || conn.to.id !== connection.to.id);
+  }
+
   route(to: INode, excepts: INode[] = []): Connection | undefined {
     const connections = this._connections
       .filter(conn => !excepts.some(e => e.id === conn.from.id || e.id === conn.to.id))

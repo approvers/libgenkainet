@@ -23,9 +23,9 @@ export class Network implements INetwork {
     this.onUpdated?.call(this);
   }
 
-  route(to: INode, excepts: INode[] = []): Connection | undefined {
+  route(to: INode, excepts: IConnection[] = []): Connection | undefined {
     const connections = this._connections
-      .filter(conn => !excepts.some(e => e.id === conn.from.id || e.id === conn.to.id))
+      .filter(conn => !excepts.some(e => e.from.id === conn.from.id && e.to.id === conn.to.id))
       .filter(conn => conn.from.id === to.id || conn.to.id === to.id)
     ;
 
@@ -43,7 +43,7 @@ export class Network implements INetwork {
 
     return this.route(
       connection.from.id === to.id ? connection.to : connection.from,
-      [...excepts],
+      [...excepts, connection],
     );
   }
 

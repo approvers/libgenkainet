@@ -15,7 +15,6 @@ export class Node implements INode {
 
   constructor(
     public readonly id: string,
-    private readonly _discoverer: IDiscoverer,
     private readonly _handlerFactory: IHandlerFactory,
     private readonly _connectionFactory: IRTCPeerConnectionFactory = new RTCPeerConnectionFactory(),
   ) {
@@ -23,8 +22,8 @@ export class Node implements INode {
     this._handler = this._handlerFactory.create(this);
   }
 
-  async connect(): Promise<Connection> {
-    const to = await this._discoverer.discover();
+  async connect(discoverer: IDiscoverer): Promise<Connection> {
+    const to = await discoverer.discover();
     const connection = new Connection(
       this,
       to,
@@ -36,7 +35,7 @@ export class Node implements INode {
       this.network.remove(connection);
     };
 
-    await connection.establish(this._discoverer);
+    await connection.establish(discoverer);
     this.network.add(connection);
 
     return connection;

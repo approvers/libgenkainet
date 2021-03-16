@@ -71,7 +71,6 @@ const offer = async (offer) => {
 
 const bob = new Node(
   'bob',
-  { discover, offer },
   new DefaultHandlerFactory({
     handle(from, message) {
       console.log(`bob received from ${from.id}: ${message}`);
@@ -82,7 +81,6 @@ const bob = new Node(
 
 const alice = new Node(
   'alice',
-  { discover, offer },
   new DefaultHandlerFactory({
     handle(from, message) {
       console.log(`alice received from ${from.id}: ${message}`);
@@ -92,7 +90,7 @@ const alice = new Node(
 );
 
 (async () => {
-  const bobToDiscoverer = await bob.connect();
+  const bobToDiscoverer = await bob.connect({ discover, offer });
   console.log(`connection established from ${bobToDiscoverer.from.id} to ${bobToDiscoverer.to.id}`);
 
   bob.send(
